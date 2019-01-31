@@ -2,34 +2,23 @@
 import pandas as pd
 import configparser as cf
 
+# read config file
 config = cf.ConfigParser()
 config.read("setup.ini")
-print(config.sections())
-print(config['MAIL']['smtp'])
 
-print(config.get('TEXT_DE', 'text', raw=True))
-
-print(config.get('TEXT_DE', 'text', vars={
-    'Vorname': 'hugo',
-    'Nachname': 'meier',
-    'Gesamt': '39',
-    'Note': '5',
-    'test': 'sss'
-}))
-
-#print(config['TEXT_DE']['text'])
+# output some infos
+print("Using:")
+print("SMTP " + config['MAIL']['smtp'])
+print("User " + config['MAIL']['user'])
 
 # Assign spreadsheet filename to `file`
-file = "set file path"
+file = "./Results.xlsx"
 
 # Load spreadsheet
 xl = pd.ExcelFile(file)
 
-# Print the sheet names
-print(xl.sheet_names)
-
-# Load a sheet into a DataFrame by name: df1
-df1 = xl.parse('Worksheet')
+# Load first sheet into a pandas-DataFrame
+df1 = xl.parse(xl.sheet_names[0])
 
 # iterate excel rows
 for index, row in df1.iterrows():
