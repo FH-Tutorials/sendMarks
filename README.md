@@ -3,7 +3,7 @@
 ## Install
 
 * python >= 3.7
-* pip install -r requierments.txt
+* pip install -r requirements.txt
 
 ## run
 
