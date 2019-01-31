@@ -1,0 +1,15 @@
+et-xmlfile==1.0.1
+jdcal==1.4
+lml==0.0.9
+numpy==1.16.0
+openpyxl==2.5.12
+pandas==0.23.4
+pyexcel==0.5.10
+pyexcel-io==0.5.11
+python-dateutil==2.7.5
+pytz==2018.9
+six==1.12.0
+texttable==1.6.0
+xlrd==1.2.0
+xlutils3==1.0.2
+configparser==3.7.1
