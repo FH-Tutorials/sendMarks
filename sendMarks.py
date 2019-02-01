@@ -1,32 +1,50 @@
 # Import pandas
 import pandas as pd
 import configparser as cf
-import getpass #https://pymotw.com/2/getpass/
+#import getpass #https://pymotw.com/2/getpass/
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
+import argparse
+import sys
+import os.path
 
+default_config='setup.ini'
+def get_excel_handle(parser, arg):
+    if not os.path.exists(arg):
+        parser.error("The file %s does not exist!" % arg)
+    else:
+        try:
+            return pd.ExcelFile(arg)
+        except Exception as e:
+            parser.error("Error processing file %s: %s" % (arg, str(e)))
 
-#todo: mail
-#  https://code.tutsplus.com/tutorials/sending-emails-in-python-with-smtp--cms-29975
+parser = argparse.ArgumentParser(description='Process Excel File')
+parser.add_argument('xlsfile', help='path to excel file', type=lambda x:get_excel_handle(parser, x))
+parser.add_argument('--config', help='path to config file (default: %s)' % default_config)
+parser.set_defaults(config=default_config)
+args = parser.parse_args()
 
 # read config file
 config = cf.ConfigParser()
-config.read("setup.ini")
+config.read(args.config)
+
+
+#password = getpass.getpass()
+
+# Assign spreadsheet filename to `file`
+file = args.xlsfile
+
+# pick up handle
+xl = args.xlsfile
+
+# Load spreadsheet
 
 # output some infos
 print("Using:")
 print("SMTP " + config['MAIL']['smtp'])
 print("User " + config['MAIL']['user'])
-
-#password = getpass.getpass()
-
-# Assign spreadsheet filename to `file`
-file = "./Results.xlsx"
-
-# Load spreadsheet
-xl = pd.ExcelFile(file)
 
 # Load first sheet into a pandas-DataFrame
 df1 = xl.parse(xl.sheet_names[0])

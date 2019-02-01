@@ -13,4 +13,3 @@ texttable==1.6.0
 xlrd==1.2.0
 xlutils3==1.0.2
 configparser==3.7.1
-smtplib
