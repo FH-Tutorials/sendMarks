@@ -1,8 +1,6 @@
-# Import pandas
 import pandas as pd
 import configparser as cf
-#import getpass #https://pymotw.com/2/getpass/
-
+import getpass
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
@@ -11,6 +9,9 @@ import sys
 import os.path
 
 default_config='setup.ini'
+
+# retrieve excel handle if possible otherwise
+# provide parser error
 def get_excel_handle(parser, arg):
     if not os.path.exists(arg):
         parser.error("The file %s does not exist!" % arg)
@@ -20,49 +21,42 @@ def get_excel_handle(parser, arg):
         except Exception as e:
             parser.error("Error processing file %s: %s" % (arg, str(e)))
 
+# setup argument parser
 parser = argparse.ArgumentParser(description='Process Excel File')
 parser.add_argument('xlsfile', help='path to excel file', type=lambda x:get_excel_handle(parser, x))
 parser.add_argument('--config', help='path to config file (default: %s)' % default_config)
-parser.set_defaults(config=default_config)
+parser.add_argument('--login', help='enable SMTP login', action='store_true')
+parser.add_argument('--starttls', help='enable starttls', action='store_true')
+parser.set_defaults(config=default_config,login=False,starttls=False)
 args = parser.parse_args()
 
 # read config file
 config = cf.ConfigParser()
 config.read(args.config)
 
-
-#password = getpass.getpass()
-
-# Assign spreadsheet filename to `file`
-file = args.xlsfile
-
-# pick up handle
+# pick up excel handle
 xl = args.xlsfile
 
-# Load spreadsheet
-
-# output some infos
-print("Using:")
-print("SMTP " + config['MAIL']['smtp'])
-print("User " + config['MAIL']['user'])
-
-# Load first sheet into a pandas-DataFrame
-df1 = xl.parse(xl.sheet_names[0])
-
+# connect to STMP server
 connectString = config['MAIL']['smtp'] + ":" + config['MAIL']['port']
-print(connectString)
-
-# create server
+print("Connecting to: %s ..." % connectString)
 server = smtplib.SMTP(connectString)
 
-# server.starttls()
+# enable starttls
+if args.starttls: server.starttls()
 
-# Login Credentials for sending the mail
-# server.login(config['MAIL']['user'], password)
+# login using credentials 
+if args.login:
+    print("Logging in with User %s: " % config['MAIL']['user'])
+    password = getpass.getpass()
+    server.login(config['MAIL']['user'], password)
+
+# Load first sheet into a pandas-DataFrame
+df = xl.parse(xl.sheet_names[0])
 
 print("sending messages...")
 # iterate excel rows
-for index, row in df1.iterrows():
+for index, row in df.iterrows():
     # create message object instance
     msg = MIMEMultipart()
     msg['From'] = config['MAIL']['From']
