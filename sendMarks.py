@@ -8,7 +8,7 @@ import argparse
 import sys
 import os.path
 
-default_config='setup.ini'
+DEFAULT_CONFIG='setup.ini'
 
 # retrieve excel handle if possible otherwise
 # provide parser error
@@ -24,10 +24,10 @@ def get_excel_handle(parser, arg):
 # setup argument parser
 parser = argparse.ArgumentParser(description='Process Excel File')
 parser.add_argument('xlsfile', help='path to excel file', type=lambda x:get_excel_handle(parser, x))
-parser.add_argument('--config', help='path to config file (default: %s)' % default_config)
+parser.add_argument('--config', help='path to config file (default: %s)' % DEFAULT_CONFIG)
 parser.add_argument('--login', help='enable SMTP login', action='store_true')
 parser.add_argument('--starttls', help='enable starttls', action='store_true')
-parser.set_defaults(config=default_config,login=False,starttls=False)
+parser.set_defaults(config=DEFAULT_CONFIG,login=False,starttls=False)
 args = parser.parse_args()
 
 # read config file
